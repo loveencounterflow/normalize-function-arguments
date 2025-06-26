@@ -43,6 +43,12 @@ validation
   * **`[—]`** fallback value for unset qualified arguments
   * **`[—]`** function or type to check whether last argument is 'Q-worthy' (one expected for named
     arguments)
+  * **`[—]`** name of named parameters object, defaults to `cfg`
+* **`[—]`** allow the CFG parameter to be in penultimate position to cover cases (like in
+  `Normalize_function_arguments::nfa()`) where a final parameter should be occupied by e.g. a function (but
+  do not place type restrictions on that last parameter)
+* **`[—]`** allow asynchronous functions, generator functions, async generator functions for
+  `Normalize_function_arguments::nfa#fn`
 
 
 ### To Be Written: Template Class
@@ -64,6 +70,9 @@ validation
   simpler, faster; will be handled by `cfg.template` / `cfg.type`
 * **`[+]`** implement class `Template`
 * **`[+]`** implement recursive templating in class `Template`
+* **`[+]`** <del>if last parameter is named `cfg`, assume it is for the named parameters object and assign it
+  a fallback value `{}`</del> <ins>mandate at least one and final parameter that must have the configured
+  `q_name`</ins>
 
 <!--
 ###
