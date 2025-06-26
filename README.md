@@ -9,7 +9,7 @@
 - [normalize-function-arguments](#normalize-function-arguments)
   - [Terminology](#terminology)
   - [To Do](#to-do)
-    - [To Be Written: Template CLass](#to-be-written-template-class)
+    - [To Be Written: Template Class](#to-be-written-template-class)
   - [Is Done](#is-done)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -45,7 +45,7 @@ validation
     arguments)
 
 
-### To Be Written: Template CLass
+### To Be Written: Template Class
 
 * class `Template` accepts `cfg`, an optional, single POD for instantiation
 * will copy all own properties of `cfg`, but
@@ -53,6 +53,7 @@ validation
 * in order to have templates with mutable objects as properties that are not shared after copying with `t =
   new Template cfg; { t..., }`, do not use `t = { n: [ 1, 2, 3, ], }`, instead wrap value in function, as in
   `t = { n: ( -> [ 1, 2, 3, ] ), }`; now every time `t` is copied, `t.n` will be a new list
+* nested PODs will be recursively turned into instances of `Template`
 
 ## Is Done
 
