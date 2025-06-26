@@ -1,6 +1,6 @@
 {
   "name": "normalize-function-arguments",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Normalize JavaScript function arguments to simplify variadic function signatures, default values, type validation",
   "main": "lib/main.js",
   "scripts": {
