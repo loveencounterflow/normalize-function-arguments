@@ -17,9 +17,11 @@ H                         = require './helpers'
 
 
 #=========================================================================================================
-class Arity_error extends Error
-class Not_implemented_error extends Error
-class Value_mismatch_error extends Error
+class Arity_error             extends Error
+class Named_arity_error       extends Arity_error
+class Positional_arity_error  extends Arity_error
+class Not_implemented_error   extends Error
+class Value_mismatch_error    extends Error
 
 
 #===========================================================================================================
@@ -52,27 +54,32 @@ class Normalize_function_arguments
     #.......................................................................................................
     return ( P... ) ->
       #.....................................................................................................
-      if gnd.pod.isa P.at -1  then  Q = gnd.pod.create P.pop() ### NOTE copy object so we can modify it ###
-      else                          Q = gnd.pod.create()
+      if gnd.pod.isa P.at -1
+        if arity is 0 then  throw new Named_arity_error "Ωnfa___2 expected up to 0 named arguments objects, got 1"
+        else                Q = gnd.pod.create P.pop() ### NOTE copy object so we can modify it ###
+      else
+        if arity is 0 then  Q = null
+        else                Q = gnd.pod.create()
       #.....................................................................................................
       if P.length > p_arity
-        throw new Arity_error "Ωnfa___3 expected up to #{p_arity} positional arguments, got #{P.length}"
+        throw new Positional_arity_error "Ωnfa___3 expected up to #{p_arity} positional arguments, got #{P.length}"
       #.....................................................................................................
       P.push undefined while P.length < p_arity
       #.....................................................................................................
-      for name, idx in p_names
-        p_value = P[ idx  ]
-        q_value = Q[ name ]
-        switch true
-          when ( p_value is   undefined ) and ( q_value is   undefined ) then null
-          when ( p_value is   undefined ) and ( q_value isnt undefined ) then P[ idx  ] = q_value
-          when ( p_value isnt undefined ) and ( q_value is   undefined ) then Q[ name ] = p_value
-          else
-            ### TAINT treat acc to value mismatch resolution strategy ###
-            # unless p_value is q_value                                   # strategy: 'error'
-            #   throw new Value_mismatch_error "Ωnfa___4"
-            # P[ idx  ] = q_value                                           # strategy: 'named'
-            Q[ name ] = p_value                                             # strategy: 'positional'
+      if ( p_arity > 0 ) and Q?
+        for name, idx in p_names
+          p_value = P[ idx  ]
+          q_value = Q[ name ]
+          switch true
+            when ( p_value is   undefined ) and ( q_value is   undefined ) then null
+            when ( p_value is   undefined ) and ( q_value isnt undefined ) then P[ idx  ] = q_value
+            when ( p_value isnt undefined ) and ( q_value is   undefined ) then Q[ name ] = p_value
+            else
+              ### TAINT treat acc to value mismatch resolution strategy ###
+              # unless p_value is q_value                                   # strategy: 'error'
+              #   throw new Value_mismatch_error "Ωnfa___4"
+              # P[ idx  ] = q_value                                           # strategy: 'named'
+              Q[ name ] = p_value                                             # strategy: 'positional'
       #.....................................................................................................
       return fn.call @, P..., Q
 
