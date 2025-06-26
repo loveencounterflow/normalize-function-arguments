@@ -38,6 +38,8 @@ validation
   * **`[—]`** name clash resolution strategies
   * **`[—]`** fallback value for unset positional arguments (or use `template`)
   * **`[—]`** fallback value for unset qualified arguments
+  * **`[—]`** function or type to check whether last argument is 'Q-worthy' (one expected for named
+    arguments)
 * **`[—]`** handle empty signatures
   * **`[+]`** in `Normalize_function_arguments::get_signature()`
   * **`[—]`** in `Normalize_function_arguments::nfa()`
