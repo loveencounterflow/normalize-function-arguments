@@ -9,6 +9,7 @@
 - [normalize-function-arguments](#normalize-function-arguments)
   - [Terminology](#terminology)
   - [To Do](#to-do)
+    - [To Be Written: Template CLass](#to-be-written-template-class)
   - [Is Done](#is-done)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -27,9 +28,10 @@ validation
 * **positional parameters** (`P`)
 * **positional arguments**
 
+
 ## To Do
 
-* **`[—]`** implement class `Template`, argument `template` as `nfa { template, }, fn`
+* **`[—]`** CFG setting `template` as `nfa { template, }, fn`
 * **`[—]`** implement validation as `nfa { isa, }, fn`
 * **`[—]`** integrate ClearType as `nfa type, fn`
 * **`[—]`** allow shifting of arguments depending on their type
@@ -42,6 +44,16 @@ validation
   * **`[—]`** function or type to check whether last argument is 'Q-worthy' (one expected for named
     arguments)
 
+
+### To Be Written: Template CLass
+
+* class `Template` accepts `cfg`, an optional, single POD for instantiation
+* will copy all own properties of `cfg`, but
+* properties that are functions will be turned into managed properties
+* in order to have templates with mutable objects as properties that are not shared after copying with `t =
+  new Template cfg; { t..., }`, do not use `t = { n: [ 1, 2, 3, ], }`, instead wrap value in function, as in
+  `t = { n: ( -> [ 1, 2, 3, ] ), }`; now every time `t` is copied, `t.n` will be a new list
+
 ## Is Done
 
 * **`[+]`** handle empty signatures
@@ -49,6 +61,8 @@ validation
   * **`[+]`** in `Normalize_function_arguments::nfa()`
 * **`[+]`** consider to dump dispositions, disallow soaks, default values in signatures to make analysis
   simpler, faster; will be handled by `cfg.template` / `cfg.type`
+* **`[+]`** implement class `Template`
+* **`[+]`** implement recursive templating in class `Template`
 
 <!--
 ###
