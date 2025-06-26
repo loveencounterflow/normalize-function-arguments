@@ -13,6 +13,7 @@ H                         = require './helpers'
   help
   rpr                   } = H
 # E                         = require './errors'
+# optional                  = Symbol 'optional'
 
 
 #=========================================================================================================
@@ -37,96 +38,87 @@ class Normalize_function_arguments
   #---------------------------------------------------------------------------------------------------------
   constructor: ( cfg = null ) ->
     if cfg?
-      throw new Not_implemented_error "Ωnfa__10 configuration not implemented"
+      throw new Not_implemented_error "Ωnfa___1 configuration not implemented"
     bind_instance_methods @
     return undefined
 
   #---------------------------------------------------------------------------------------------------------
-  nfa: ( fn ) ->
-    ### Normalize Function Arguments ###
+  nfa: ( fn ) ->                                                        ### Normalize Function Arguments ###
     signature         = @get_signature fn
     names             = Object.keys signature
-    pos_names         = names[ .. names.length - 2 ]
     arity             = names.length
-    dispositions      = ( signature[ name ] for name in names )
+    p_names           = names[ ... names.length - 1 ]
+    p_arity           = p_names.length
     #.......................................................................................................
+    dispositions      = ( signature[ name ] for name in names )
     for disposition, idx in dispositions
       continue if disposition is 'bare'
-      throw new Not_implemented_error "Ωnfa___6 encountered unimplemented disposition #{rpr disposition} for parameter #names[ idx ]"
+      throw new Not_implemented_error "Ωnfa___2 encountered unimplemented disposition #{rpr disposition} for parameter #names[ idx ]"
     #.......................................................................................................
     return ( P... ) ->
       #.....................................................................................................
-      if P.length > arity
-        throw new Arity_error "Ωnfa___7 expected up to #{arity} arguments, got #{P.length}"
+      if gnd.pod.isa P.at -1  then  Q = gnd.pod.create P.pop() ### NOTE copy object so we can modify it ###
+      else                          Q = gnd.pod.create()
       #.....................................................................................................
-      unless gnd.pod.isa P.at -1
-        if P.length > arity - 1
-          throw new Arity_error "Ωnfa___8 expected up to #{arity - 1} positional arguments plus one POD, got #{P.length} positional arguments"
-        P.push {} # Object.create null
-      else
-        ### NOTE copy object so we can modify it ###
-        # P[ P.length - 1 ] = Object.assign ( Object.create null ), P.at -1
-        P[ P.length - 1 ] = Object.assign {}, P.at -1
+      if P.length > p_arity
+        throw new Arity_error "Ωnfa___3 expected up to #{p_arity} positional arguments, got #{P.length}"
       #.....................................................................................................
-      while P.length < arity
-        P.splice P.length - 1, 0, undefined
+      P.push undefined while P.length < p_arity
       #.....................................................................................................
-      ### TAINT use Q = P.pop(), fn.call @, P..., Q ###
-      Q = P.at -1
-      for name, idx in pos_names
-        pos_value = P[ idx  ]
-        nme_value = Q[ name ]
+      for name, idx in p_names
+        p_value = P[ idx  ]
+        q_value = Q[ name ]
         switch true
-          when ( pos_value is   undefined ) and ( nme_value is   undefined ) then null
-          when ( pos_value is   undefined ) and ( nme_value isnt undefined ) then P[ idx  ] = nme_value
-          when ( pos_value isnt undefined ) and ( nme_value is   undefined ) then Q[ name ] = pos_value
+          when ( p_value is   undefined ) and ( q_value is   undefined ) then null
+          when ( p_value is   undefined ) and ( q_value isnt undefined ) then P[ idx  ] = q_value
+          when ( p_value isnt undefined ) and ( q_value is   undefined ) then Q[ name ] = p_value
           else
             ### TAINT treat acc to value mismatch resolution strategy ###
-            # unless pos_value is nme_value                                   # strategy: 'error'
-            #   throw new Value_mismatch_error "Ωnfa___9"
-            # P[ idx  ] = nme_value                                           # strategy: 'named'
-            Q[ name ] = pos_value                                             # strategy: 'positional'
+            # unless p_value is q_value                                   # strategy: 'error'
+            #   throw new Value_mismatch_error "Ωnfa___4"
+            # P[ idx  ] = q_value                                           # strategy: 'named'
+            Q[ name ] = p_value                                             # strategy: 'positional'
       #.....................................................................................................
-      return fn.call @, P...
+      return fn.call @, P..., Q
 
   #---------------------------------------------------------------------------------------------------------
   get_signature: ( fn ) ->
     ### thx to https://github.com/sindresorhus/identifier-regex ###
-    jsid_re              = /// ^ [ $ _ \p{ID_Start} ] [ $ _ \u200C \u200D \p{ID_Continue} ]* $ ///sv
-    debug()
+    jsid_re = /// ^ [ $ _ \p{ID_Start} ] [ $ _ \u200C \u200D \p{ID_Continue} ]* $ ///sv
+    R       = {}
     body    = fn.toString()
     kernel  = body.replace /// ^ [^ \( ]* \( \s* ( [^ \) ]* ) \s* \) .* $ ///sv, '$1'
+    return R if kernel is ''
     parts   = kernel.split /// , \s* ///sv
-    # urge 'Ωnfa___1', rpr body
-    # urge 'Ωnfa___2', rpr kernel
-    # urge 'Ωnfa___3', rpr parts
     $names  = []
-    # R       = { $names, }
-    R       = {}
+    #.......................................................................................................
     for part in parts
       switch true
+        #...................................................................................................
         when ( match = part.match /// ^ [.]{3} \s* (?<name> \S+ ) \s* $ ///sv )?
-          name          = match.groups.name
           disposition   = 'soak'
-        when ( match = part.match /// ^ (?<name> \S+ ) \s* = \s* optional $///sv )?
           name          = match.groups.name
+        #...................................................................................................
+        when ( match = part.match /// ^ (?<name> \S+ ) \s* = \s* optional $///sv )?
           disposition   = 'optional'
+          name          = match.groups.name
+        #...................................................................................................
         else
           unless ( part.match jsid_re )?
-            throw new Error "Ωnfa___4 not compliant: #{rpr part} in #{rpr kernel}"
-          name          = part
+            throw new Error "Ωnfa___5 not compliant: #{rpr part} in #{rpr kernel}"
           disposition   = 'bare'
-      # info 'Ωnfa___5', ( rpr part ), { name, disposition, }
+          name          = part
+      #.....................................................................................................
       R[ name ] = disposition
-      # R[ name ] = { name, disposition, }
       $names.push name
     return R
 
 
 #===========================================================================================================
-normalizer  = new Normalize_function_arguments()
-{ nfa }     = normalizer
+normalizer                = new Normalize_function_arguments()
+{ nfa
+  get_signature }         = normalizer
 
 #===========================================================================================================
-module.exports = { nfa, internals, }
+module.exports = { nfa, get_signature, internals, }
 

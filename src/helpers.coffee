@@ -4,6 +4,8 @@
 #===========================================================================================================
 # optional                  = Symbol 'optional'
 pod_prototypes            = Object.freeze [ null, ( Object.getPrototypeOf {} ), ]
+# new_pod                   = -> {}
+new_pod                   = -> Object.create null
 
 # #===========================================================================================================
 # @bind_proto = ( that, f ) -> that::[ f.name ] = f.bind that::
@@ -21,7 +23,9 @@ gnd = do ->
     # #.........................................................................................................
     # boolean:        isa:  ( x ) -> ( x is true ) or ( x is false )
     function:       isa:  ( x ) -> ( Object::toString.call x ) is '[object Function]'
-    pod: isa: ( x ) -> x? and ( Object.getPrototypeOf x ) in pod_prototypes
+    pod:
+      isa:    ( x ) -> x? and ( Object.getPrototypeOf x ) in pod_prototypes
+      create: ( Q = null ) -> Object.assign new_pod(), Q
   type.name = typename for typename, type of R
   return R
 
@@ -54,6 +58,7 @@ bind_instance_methods = ( instance, keep_name = true ) ->
     else
       hide instance, key, method.bind instance
   return null
+
 
 #===========================================================================================================
 debug   = console.debug
