@@ -30,8 +30,28 @@ internals = new class Internals then constructor: ->
   @gnd            = gnd
   return undefined
 
+#===========================================================================================================
+class Template
 
-
+  #---------------------------------------------------------------------------------------------------------
+  constructor: ( cfg = null ) ->
+    for name, descriptor of Object.getOwnPropertyDescriptors cfg ? {}
+      descriptor = switch true
+        #...................................................................................................
+        when gnd.function.isa descriptor.value    then do ( descriptor ) =>
+          { configurable, value: get, } = descriptor
+          return { enumerable: true, configurable, get, }
+        #...................................................................................................
+        when gnd.pod.isa      descriptor.value    then do ( descriptor ) =>
+          { configurable, value, } = descriptor
+          get = -> new Template value
+          return { enumerable: true, configurable, get, }
+        #...................................................................................................
+        else
+          descriptor
+      #.....................................................................................................
+      Object.defineProperty @, name, descriptor
+    return undefined
 
 
 #===========================================================================================================
@@ -122,5 +142,5 @@ normalizer                = new Normalize_function_arguments()
   get_signature }         = normalizer
 
 #===========================================================================================================
-module.exports = { nfa, get_signature, internals, }
+module.exports = { nfa, get_signature, Normalize_function_arguments, Template, internals, }
 
