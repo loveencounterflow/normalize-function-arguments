@@ -7,6 +7,7 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [normalize-function-arguments](#normalize-function-arguments)
+  - [Terminology](#terminology)
   - [To Do](#to-do)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -18,6 +19,13 @@
 Normalize JavaScript function arguments to simplify variadic function signatures, default values, type
 validation
 
+## Terminology
+
+* **qualified parameters** (`Q`)
+* **qualified argument(s)**
+* **positional parameters** (`P`)
+* **positional arguments**
+
 ## To Do
 
 * **`[—]`** implement class `Template`, argument `template` as `nfa { template, }, fn`
@@ -28,6 +36,13 @@ validation
   * **`[—]`** demand vs allow final CFG
   * **`[—]`** demand n positional arguments
   * **`[—]`** name clash resolution strategies
+  * **`[—]`** fallback value for unset positional arguments (or use `template`)
+  * **`[—]`** fallback value for unset qualified arguments
+* **`[—]`** handle empty signatures
+  * **`[+]`** in `Normalize_function_arguments::get_signature()`
+  * **`[—]`** in `Normalize_function_arguments::nfa()`
+* **`[—]`** consider to dump dispositions, disallow soaks, default values in signatures to make analysis
+  simpler, faster; will be handled by `cfg.template` / `cfg.type`
 
 
 <!--
