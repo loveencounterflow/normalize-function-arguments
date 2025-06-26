@@ -81,12 +81,10 @@ class Normalize_function_arguments
       #.....................................................................................................
       P.push undefined while P.length < p_arity
       #.....................................................................................................
+      ### Harmonize values: ###
       for name, idx in p_names
-        p_value = P[ idx  ]
-        q_value = Q[ name ]
-        switch true
-          when ( p_value isnt undefined )                                then Q[ name ] = p_value
-          when ( p_value is   undefined ) and ( q_value isnt undefined ) then P[ idx  ] = q_value
+        if ( P[ idx ] isnt undefined ) then Q[ name ] = P[ idx  ]
+        else                                P[ idx  ] = Q[ name ]
       #.....................................................................................................
       return fn.call @, P..., Q
 
