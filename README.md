@@ -23,8 +23,10 @@ validation
 * **`[—]`** implement class `Template`, argument `template` as `nfa { template, }, fn`
 * **`[—]`** implement validation as `nfa { isa, }, fn`
 * **`[—]`** integrate ClearType as `nfa type, fn`
+* **`[—]`** allow shifting of arguments depending on their type
 * **`[—]`** configuration settings:
   * **`[—]`** demand vs allow final CFG
+  * **`[—]`** demand n positional arguments
   * **`[—]`** name clash resolution strategies
 
 
