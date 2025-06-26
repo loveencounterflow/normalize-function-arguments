@@ -31,9 +31,8 @@ validation
 
 ## To Do
 
-* **`[—]`** CFG setting `template` as `nfa { template, }, fn`
 * **`[—]`** implement validation as `nfa { isa, }, fn`
-* **`[—]`** integrate ClearType as `nfa type, fn`
+* **`[—]`** integrate ClearType as `nfa type, fn` and `nfa { type, }, fn`
 * **`[—]`** allow shifting of arguments depending on their type
 * **`[—]`** configuration settings:
   * **`[—]`** demand vs allow final CFG
@@ -73,6 +72,7 @@ validation
 * **`[+]`** <del>if last parameter is named `cfg`, assume it is for the named parameters object and assign it
   a fallback value `{}`</del> <ins>mandate at least one and final parameter that must have the configured
   `q_name`</ins>
+* **`[+]`** CFG setting `template` as `nfa { template, }, fn`
 
 <!--
 ###
