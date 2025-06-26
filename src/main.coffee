@@ -50,11 +50,6 @@ class Normalize_function_arguments
     p_names           = names[ ... names.length - 1 ]
     p_arity           = p_names.length
     #.......................................................................................................
-    dispositions      = ( signature[ name ] for name in names )
-    for disposition, idx in dispositions
-      continue if disposition is 'bare'
-      throw new Not_implemented_error "Ωnfa___2 encountered unimplemented disposition #{rpr disposition} for parameter #names[ idx ]"
-    #.......................................................................................................
     return ( P... ) ->
       #.....................................................................................................
       if gnd.pod.isa P.at -1  then  Q = gnd.pod.create P.pop() ### NOTE copy object so we can modify it ###
@@ -93,21 +88,21 @@ class Normalize_function_arguments
     $names  = []
     #.......................................................................................................
     for part in parts
-      switch true
-        #...................................................................................................
-        when ( match = part.match /// ^ [.]{3} \s* (?<name> \S+ ) \s* $ ///sv )?
-          disposition   = 'soak'
-          name          = match.groups.name
-        #...................................................................................................
-        when ( match = part.match /// ^ (?<name> \S+ ) \s* = \s* optional $///sv )?
-          disposition   = 'optional'
-          name          = match.groups.name
-        #...................................................................................................
-        else
-          unless ( part.match jsid_re )?
-            throw new Error "Ωnfa___5 not compliant: #{rpr part} in #{rpr kernel}"
-          disposition   = 'bare'
-          name          = part
+      # switch true
+      #   #...................................................................................................
+      #   when ( match = part.match /// ^ [.]{3} \s* (?<name> \S+ ) \s* $ ///sv )?
+      #     disposition   = 'soak'
+      #     name          = match.groups.name
+      #   #...................................................................................................
+      #   when ( match = part.match /// ^ (?<name> \S+ ) \s* = \s* optional $///sv )?
+      #     disposition   = 'optional'
+      #     name          = match.groups.name
+      #   #...................................................................................................
+      #   else
+      unless ( part.match jsid_re )?
+        throw new Error "Ωnfa___5 not compliant: #{rpr part} in #{rpr kernel}"
+      disposition   = 'bare'
+      name          = part
       #.....................................................................................................
       R[ name ] = disposition
       $names.push name
