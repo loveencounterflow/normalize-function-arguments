@@ -3,7 +3,8 @@
 
 #===========================================================================================================
 H                         = require './helpers'
-{ gnd
+{ Template
+  gnd
   hide
   # get_instance_methods
   bind_instance_methods
@@ -17,11 +18,19 @@ H                         = require './helpers'
 
 
 #=========================================================================================================
-class Arity_error             extends Error
-class Named_arity_error       extends Arity_error
-class Positional_arity_error  extends Arity_error
-class Not_implemented_error   extends Error
-class Value_mismatch_error    extends Error
+class Nfa_error                           extends Error
+class Arity_error                         extends Nfa_error
+class Named_arity_error                   extends Arity_error
+class Runtime_arity_error                 extends Arity_error
+class Positional_arity_error              extends Arity_error
+class Not_implemented_error               extends Nfa_error
+class Value_mismatch_error                extends Nfa_error
+class Signature_error                     extends Nfa_error
+class Signature_disposition_Error         extends Signature_error
+class Signature_naming_Error              extends Arity_error
+class Signature_missing_parameter_Error   extends Arity_error
+class Type_error                          extends Nfa_error
+# class Npo_type_error                      extends Type_error
 
 
 #===========================================================================================================
@@ -29,29 +38,6 @@ internals = new class Internals then constructor: ->
   @pod_prototypes = H.pod_prototypes
   @gnd            = gnd
   return undefined
-
-#===========================================================================================================
-class Template
-
-  #---------------------------------------------------------------------------------------------------------
-  constructor: ( cfg = null ) ->
-    for name, descriptor of Object.getOwnPropertyDescriptors cfg ? {}
-      descriptor = switch true
-        #...................................................................................................
-        when gnd.function.isa descriptor.value    then do ( descriptor ) =>
-          { configurable, value: get, } = descriptor
-          return { enumerable: true, configurable, get, }
-        #...................................................................................................
-        when gnd.pod.isa      descriptor.value    then do ( descriptor ) =>
-          { configurable, value, } = descriptor
-          get = -> new Template value
-          return { enumerable: true, configurable, get, }
-        #...................................................................................................
-        else
-          descriptor
-      #.....................................................................................................
-      Object.defineProperty @, name, descriptor
-    return undefined
 
 
 #===========================================================================================================
@@ -65,8 +51,21 @@ class Normalize_function_arguments
     return undefined
 
   #---------------------------------------------------------------------------------------------------------
-  nfa: ( fn ) ->                                                        ### Normalize Function Arguments ###
+  nfa: ( cfg, fn ) ->                                                   ### Normalize Function Arguments ###
+    switch arity = arguments.length
+      when 1 then [ cfg, fn, ] = [ {}, cfg, ]
+      when 2 then null
+      else throw new Runtime_arity_error "Ωnfa___2 expected 1 or 2 arguments, got #{arity}"
+    #.......................................................................................................
+    ### TAINT do this in `gnd` ###
+    unless gnd.pod.isa cfg      then throw new Type_error "Ωnfa___3 expected a POD, got #{rpr cfg}"
+    unless gnd.function.isa fn  then throw new Type_error "Ωnfa___4 expected a function, got #{rpr cfg}"
+    #.......................................................................................................
+    cfg               = { gnd.nfa_cfg.template..., cfg..., }
+    cfg.template      = ( new Template cfg.template ) if cfg.template?
+    #.......................................................................................................
     signature         = @get_signature fn
+    # q_name            = 'cfg'
     names             = Object.keys signature
     arity             = names.length
     p_names           = names[ ... names.length - 1 ]
@@ -74,65 +73,50 @@ class Normalize_function_arguments
     #.......................................................................................................
     return ( P... ) ->
       #.....................................................................................................
-      if gnd.pod.isa P.at -1
-        if arity is 0 then  throw new Named_arity_error "Ωnfa___2 expected up to 0 named arguments objects, got 1"
-        else                Q = gnd.pod.create P.pop() ### NOTE copy object so we can modify it ###
-      else
-        if arity is 0 then  Q = null
-        else                Q = gnd.pod.create()
+      if gnd.pod.isa P.at -1  then  Q = gnd.pod.create cfg.template, P.pop()
+      else                          Q = gnd.pod.create cfg.template
       #.....................................................................................................
       if P.length > p_arity
-        throw new Positional_arity_error "Ωnfa___3 expected up to #{p_arity} positional arguments, got #{P.length}"
+        throw new Positional_arity_error "Ωnfa__10 expected up to #{p_arity} positional arguments, got #{P.length}"
       #.....................................................................................................
       P.push undefined while P.length < p_arity
       #.....................................................................................................
-      if ( p_arity > 0 ) and Q?
-        for name, idx in p_names
-          p_value = P[ idx  ]
-          q_value = Q[ name ]
-          switch true
-            when ( p_value is   undefined ) and ( q_value is   undefined ) then null
-            when ( p_value is   undefined ) and ( q_value isnt undefined ) then P[ idx  ] = q_value
-            when ( p_value isnt undefined ) and ( q_value is   undefined ) then Q[ name ] = p_value
-            else
-              ### TAINT treat acc to value mismatch resolution strategy ###
-              # unless p_value is q_value                                   # strategy: 'error'
-              #   throw new Value_mismatch_error "Ωnfa___4"
-              # P[ idx  ] = q_value                                           # strategy: 'named'
-              Q[ name ] = p_value                                             # strategy: 'positional'
+      for name, idx in p_names
+        p_value = P[ idx  ]
+        q_value = Q[ name ]
+        switch true
+          when ( p_value isnt undefined )                                then Q[ name ] = p_value
+          when ( p_value is   undefined ) and ( q_value isnt undefined ) then P[ idx  ] = q_value
       #.....................................................................................................
       return fn.call @, P..., Q
 
   #---------------------------------------------------------------------------------------------------------
   get_signature: ( fn ) ->
+    q_name  = 'cfg'
     ### thx to https://github.com/sindresorhus/identifier-regex ###
     jsid_re = /// ^ [ $ _ \p{ID_Start} ] [ $ _ \u200C \u200D \p{ID_Continue} ]* $ ///sv
     R       = {}
     body    = fn.toString()
     kernel  = body.replace /// ^ [^ \( ]* \( \s* ( [^ \) ]* ) \s* \) .* $ ///sv, '$1'
-    return R if kernel is ''
+    if kernel is ''
+     throw new Signature_missing_parameter_Error "Ωnfa__13 not compliant: missing parameter #{rpr q_name}"
     parts   = kernel.split /// , \s* ///sv
-    $names  = []
+    parts   = ( part.trim() for part in parts )
+    names   = []
     #.......................................................................................................
     for part in parts
-      # switch true
-      #   #...................................................................................................
-      #   when ( match = part.match /// ^ [.]{3} \s* (?<name> \S+ ) \s* $ ///sv )?
-      #     disposition   = 'soak'
-      #     name          = match.groups.name
-      #   #...................................................................................................
-      #   when ( match = part.match /// ^ (?<name> \S+ ) \s* = \s* optional $///sv )?
-      #     disposition   = 'optional'
-      #     name          = match.groups.name
-      #   #...................................................................................................
-      #   else
       unless ( part.match jsid_re )?
-        throw new Error "Ωnfa___5 not compliant: #{rpr part} in #{rpr kernel}"
+        throw new Signature_disposition_Error "Ωnfa__14 parameter disposition not compliant: #{rpr part} in #{rpr kernel}"
       disposition   = 'bare'
       name          = part
       #.....................................................................................................
       R[ name ] = disposition
-      $names.push name
+      names.push name
+    #.......................................................................................................
+    unless ( last_name = names.at -1 ) is q_name
+      throw new Signature_naming_Error "Ωnfa__15 parameter naming not compliant: last parameter must be named #{rpr q_name}, got #{rpr last_name}"
+    # delete R[ q_name ]
+    #.......................................................................................................
     return R
 
 
