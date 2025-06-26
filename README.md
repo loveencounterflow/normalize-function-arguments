@@ -9,6 +9,7 @@
 - [normalize-function-arguments](#normalize-function-arguments)
   - [Terminology](#terminology)
   - [To Do](#to-do)
+  - [Is Done](#is-done)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -40,12 +41,14 @@ validation
   * **`[—]`** fallback value for unset qualified arguments
   * **`[—]`** function or type to check whether last argument is 'Q-worthy' (one expected for named
     arguments)
-* **`[—]`** handle empty signatures
-  * **`[+]`** in `Normalize_function_arguments::get_signature()`
-  * **`[—]`** in `Normalize_function_arguments::nfa()`
-* **`[—]`** consider to dump dispositions, disallow soaks, default values in signatures to make analysis
-  simpler, faster; will be handled by `cfg.template` / `cfg.type`
 
+## Is Done
+
+* **`[+]`** handle empty signatures
+  * **`[+]`** in `Normalize_function_arguments::get_signature()`
+  * **`[+]`** in `Normalize_function_arguments::nfa()`
+* **`[+]`** consider to dump dispositions, disallow soaks, default values in signatures to make analysis
+  simpler, faster; will be handled by `cfg.template` / `cfg.type`
 
 <!--
 ###
