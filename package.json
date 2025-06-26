@@ -1,0 +1,13 @@
+{
+  "name": "normalize-function-arguments",
+  "version": "0.0.0",
+  "description": "Normalize JavaScript function arguments to simplify variadic function signatures, default values, type validation",
+  "main": "lib/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.12.1"
+}
