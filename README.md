@@ -7,6 +7,7 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [normalize-function-arguments](#normalize-function-arguments)
+  - [Properties](#properties)
   - [Terminology](#terminology)
   - [To Do](#to-do)
     - [To Be Written: Template Class](#to-be-written-template-class)
@@ -20,6 +21,20 @@
 
 Normalize JavaScript function arguments to simplify variadic function signatures, default values, type
 validation
+
+## Properties
+
+* method `nfa()` accepts (among other things) a function `fn` as argument
+* `nfa()` returns a wrapped version of `fn` that
+  * accepts the same number of arguments;
+  * `fn` will be called with a normalized arguments
+  * and its return value will be returned by the wrapper.
+* The declaration of `fn`:
+  * **must not** use spread syntax or default values on any on the parameters
+  * **must** have a parameter named `cfg` as its *only*, or as its *last* or as its *next-to-last* parameter
+* (**TBD**) templating
+* (**TBD**) validation
+* (**TBD**) ClearType integration
 
 ## Terminology
 
