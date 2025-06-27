@@ -64,9 +64,8 @@ class Normalize_function_arguments
     cfg               = { gnd.nfa_cfg.template..., cfg..., }
     cfg.template      = ( new Template cfg.template ) if cfg.template?
     #.......................................................................................................
-    signature         = @get_signature fn
-    # q_name            = 'cfg'
-    names             = Object.keys signature
+    { names
+      q_idx }         = @get_signature fn
     arity             = names.length
     p_names           = names[ ... names.length - 1 ]
     p_arity           = p_names.length
@@ -77,7 +76,7 @@ class Normalize_function_arguments
       else                          Q = gnd.pod.create cfg.template
       #.....................................................................................................
       if P.length > p_arity
-        throw new Positional_arity_error "Ωnfa__10 expected up to #{p_arity} positional arguments, got #{P.length}"
+        throw new Positional_arity_error "Ωnfa___5 expected up to #{p_arity} positional arguments, got #{P.length}"
       #.....................................................................................................
       P.push undefined while P.length < p_arity
       #.....................................................................................................
@@ -90,38 +89,35 @@ class Normalize_function_arguments
 
   #---------------------------------------------------------------------------------------------------------
   get_signature: ( fn ) ->
-    q_name  = 'cfg'
+    this_cfg_q_name = 'cfg' ### TAINT pick from @cfg ###
     ### thx to https://github.com/sindresorhus/identifier-regex ###
-    jsid_re = /// ^ [ $ _ \p{ID_Start} ] [ $ _ \u200C \u200D \p{ID_Continue} ]* $ ///sv
-    R       = {}
-    body    = fn.toString()
-    kernel  = body.replace /// ^ [^ \( ]* \( \s* ( [^ \) ]* ) \s* \) .* $ ///sv, '$1'
-    if kernel is ''
-     throw new Signature_missing_parameter_Error "Ωnfa__13 not compliant: missing parameter #{rpr q_name}"
-    parts   = kernel.split /// , \s* ///sv
-    parts   = ( part.trim() for part in parts )
-    names   = []
+    jsid_re   = /// ^ [ $ _ \p{ID_Start} ] [ $ _ \u200C \u200D \p{ID_Continue} ]* $ ///sv
     #.......................................................................................................
-    for part in parts
-      unless ( part.match jsid_re )?
-        throw new Signature_disposition_Error "Ωnfa__14 parameter disposition not compliant: #{rpr part} in #{rpr kernel}"
-      disposition   = 'bare'
-      name          = part
-      #.....................................................................................................
-      R[ name ] = disposition
-      names.push name
+    signature = fn.toString()
+    signature = signature.replace /// \s+ ///svg, ''
+    signature = signature.replace /// ^ [^ \( ]* \( (?<parens> [^ \) ]* ) \) .* $ ///svg, '$<parens>'
+    names     = signature.split ','
     #.......................................................................................................
-    unless ( last_name = names.at -1 ) is q_name
-      throw new Signature_naming_Error "Ωnfa__15 parameter naming not compliant: last parameter must be named #{rpr q_name}, got #{rpr last_name}"
-    # delete R[ q_name ]
+    q_idx     = null
+    for name, idx in names
+      if jsid_re.test name
+        q_idx = idx
+      else
+        throw new Signature_disposition_Error "Ωnfa___6 parameter disposition not compliant: #{rpr name} in #{rpr signature}"
     #.......................................................................................................
-    return R
+    unless ( last_name = names.at -1 ) is this_cfg_q_name
+      throw new Signature_naming_Error "Ωnfa___7 parameter naming not compliant: last parameter must be named #{rpr this_cfg_q_name}, got #{rpr last_name}"
+    #.......................................................................................................
+    if q_idx isnt names.length - 1
+      throw new Error "Ωnfa___8 expected #{rpr this_cfg_q_name} to come last, found it at index #{q_idx} of #{names.length} parameters"
+    #.......................................................................................................
+    return { names, q_idx, }
 
 
 #===========================================================================================================
 normalizer                = new Normalize_function_arguments()
 { nfa
-  get_signature }         = normalizer
+  get_signature         } = normalizer
 
 #===========================================================================================================
 module.exports = { nfa, get_signature, Normalize_function_arguments, Template, internals, }
