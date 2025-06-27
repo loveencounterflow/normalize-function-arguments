@@ -25,13 +25,21 @@ validation
 ## Properties
 
 * method `nfa()` accepts (among other things) a function `fn` as argument
-* `nfa()` returns a wrapped version of `fn` that
+* `nfa()` returns a function (call it `nfn`), which is a wrapped version of `fn` that
   * accepts the same number of arguments;
   * `fn` will be called with a normalized arguments
   * and its return value will be returned by the wrapper.
 * The declaration of `fn`:
   * **must not** use spread syntax or default values on any on the parameters
   * **must** have a parameter named `cfg` as its *only*, or as its *last* or as its *next-to-last* parameter
+
+* **Argument Normalization**
+  * let `A` be the list of values that `nfn` is called with.
+  * let `names` be the list of names of the parameter that `fn` was declared with.
+  * let `arity` be the length of list `names`.
+  * if the length of `A` exceeds `arity`, an error will be thrown.
+  * if the length of `A` is less then `arity`, XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
 * (**TBD**) templating
 * (**TBD**) validation
 * (**TBD**) ClearType integration
