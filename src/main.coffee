@@ -9,6 +9,8 @@ H                         = require './helpers'
   # get_instance_methods
   bind_instance_methods
   nameit
+  push_at
+  pop_at
   debug
   warn
   help
@@ -27,8 +29,9 @@ class Not_implemented_error               extends Nfa_error
 class Value_mismatch_error                extends Nfa_error
 class Signature_error                     extends Nfa_error
 class Signature_disposition_Error         extends Signature_error
-class Signature_naming_Error              extends Arity_error
-class Signature_missing_parameter_Error   extends Arity_error
+class Signature_naming_Error              extends Signature_error
+class Signature_missing_parameter_Error   extends Signature_error
+class Signature_cfg_position_error        extends Signature_error
 class Type_error                          extends Nfa_error
 # class Npo_type_error                      extends Type_error
 
@@ -37,6 +40,8 @@ class Type_error                          extends Nfa_error
 internals = new class Internals then constructor: ->
   @pod_prototypes = H.pod_prototypes
   @gnd            = gnd
+  @push_at        = push_at
+  @pop_at         = pop_at
   return undefined
 
 
@@ -65,27 +70,31 @@ class Normalize_function_arguments
     cfg.template      = ( new Template cfg.template ) if cfg.template?
     #.......................................................................................................
     { names
-      q_idx }         = @get_signature fn
+      q_idx
+      q_ridx        } = @get_signature fn
     arity             = names.length
-    p_names           = names[ ... names.length - 1 ]
+    p_names           = ( name for name, idx in names when idx isnt q_idx )
     p_arity           = p_names.length
     #.......................................................................................................
     return ( P... ) ->
       #.....................................................................................................
-      if gnd.pod.isa P.at -1  then  Q = gnd.pod.create cfg.template, P.pop()
-      else                          Q = gnd.pod.create cfg.template
+      if ( gnd.pod.isa P.at q_ridx ) then Q = gnd.pod.create cfg.template, ( pop_at P, q_ridx )
+      else                                Q = gnd.pod.create cfg.template
       #.....................................................................................................
       if P.length > p_arity
         throw new Positional_arity_error "Ωnfa___5 expected up to #{p_arity} positional arguments, got #{P.length}"
       #.....................................................................................................
-      P.push undefined while P.length < p_arity
+      push_at P, q_ridx, undefined while P.length < p_arity
       #.....................................................................................................
       ### Harmonize values: ###
       for name, idx in p_names
+        continue if idx is q_idx
         if ( P[ idx ] isnt undefined ) then Q[ name ] = P[ idx  ]
         else                                P[ idx  ] = Q[ name ]
       #.....................................................................................................
-      return fn.call @, P..., Q
+      push_at P, q_ridx, Q
+      return fn.call @, P...
+      # return fn.call @, P..., Q
 
   #---------------------------------------------------------------------------------------------------------
   get_signature: ( fn ) ->
@@ -101,17 +110,21 @@ class Normalize_function_arguments
     q_idx     = null
     for name, idx in names
       if jsid_re.test name
-        q_idx = idx
+        q_idx = idx if name is this_cfg_q_name
       else
         throw new Signature_disposition_Error "Ωnfa___6 parameter disposition not compliant: #{rpr name} in #{rpr signature}"
     #.......................................................................................................
-    unless ( last_name = names.at -1 ) is this_cfg_q_name
-      throw new Signature_naming_Error "Ωnfa___7 parameter naming not compliant: last parameter must be named #{rpr this_cfg_q_name}, got #{rpr last_name}"
+    unless q_idx?
+      names_rpr = names.join ', '
+      throw new Signature_naming_Error "Ωnfa___7 parameter naming not compliant: no parameter named #{rpr this_cfg_q_name}, got #{rpr names_rpr}"
     #.......................................................................................................
-    if q_idx isnt names.length - 1
-      throw new Error "Ωnfa___8 expected #{rpr this_cfg_q_name} to come last, found it at index #{q_idx} of #{names.length} parameters"
+    switch q_idx
+      when names.length - 2 then q_ridx = -2
+      when names.length - 1 then q_ridx = -1
+      else
+        throw new Signature_cfg_position_error "Ωnfa___8 parameter ordering not compliant: expected #{rpr this_cfg_q_name} to come last or next-to-last, found it at index #{q_idx} of #{names.length} parameters"
     #.......................................................................................................
-    return { names, q_idx, }
+    return { names, q_idx, q_ridx, }
 
 
 #===========================================================================================================
