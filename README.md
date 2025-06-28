@@ -36,30 +36,30 @@ validation
 * **Argument Normalization**
 
   * let
-    * `A` be the list of values that `nfn` is called with.
+    * `P` be the list of values that `nfn` is called with.
     * `names` be the list of names of the parameter that `fn` was declared with.
     * `arity` be the length of list `names`.
     * `q_idx` be the left-to_right (positive, zero-based) index of the `cfg` parameter.
     * `q_ridx` be the right-left (negative, minus-one-based) index of the `cfg` parameter; this will be
       either `-1` or `-2`, depending on whether `cfg` comes in ultimate or penultimate position
 
-  * if the length of `A` exceeds `arity`, an error will be thrown.
+  * if the length of `P` exceeds `arity`, an error will be thrown.
   * In order to locate the `cfg` argument, we assume that
     * if its name (`cfg`) comes last in the declaration (`q_ridx == -1`), its value, if any, may only be the
-      last element of `A`;
+      last element of `P`;
     * likewise, if its name comes next-to-last (`q_ridx == -2`), its value, if any, may only be the
-      next-to-last element of `A`.
+      next-to-last element of `P`.
     * we check whether a plain object (or POD for 'plain old dictionary') is in the ultimate or penultimate
       position;
-      * if it is, we apply templating and replace the original with a copy;
-      * if it is not, we produce a new object by templating an empty object and push it to the correct
+      * if it is a POD, we apply templating and replace the original with a copy;
+      * if it isn't a POD, we produce a new object by templating an empty object and push it to the correct
         ultimate or penultimate position
   * We now have a `cfg` object at the desired position and are ready to care for the positional arguments
     preceding the named parameters object, if any.
-  * In case the length of `A` equals `arity`, we're done.
-  * In case the length of `A` is greater than `arity`, we throw an error.
+  * In case the length of `P` equals `arity`, we're done.
+  * In case the length of `P` is greater than `arity`, we throw an error.
   * In the remaining case we push as many filler values (`undefined`) into the position *preceding* the
-    `cfg` object untile the length of `A` equals `arity`.
+    `cfg` object untile the length of `P` equals `arity`.
 
 * (**TBD**) templating
 * (**TBD**) validation

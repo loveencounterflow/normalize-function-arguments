@@ -11,6 +11,7 @@ H                         = require './helpers'
   nameit
   push_at
   pop_at
+  set_at
   debug
   warn
   help
@@ -42,6 +43,7 @@ internals = new class Internals then constructor: ->
   @gnd            = gnd
   @push_at        = push_at
   @pop_at         = pop_at
+  @set_at         = set_at
   return undefined
 
 
@@ -77,24 +79,31 @@ class Normalize_function_arguments
     p_arity           = p_names.length
     #.......................................................................................................
     return ( P... ) ->
+      if P.length > arity
+        throw new Positional_arity_error "Ωnfa___6 expected up to #{arity} arguments, got #{P.length}"
+      else if P.length < arity
+        if gnd.pod.isa P.at q_ridx
+          while P.length < arity
+            push_at P, q_ridx, undefined
+        else
+          while P.length < arity
+            P.push undefined
       #.....................................................................................................
-      if ( gnd.pod.isa P.at q_ridx ) then Q = gnd.pod.create cfg.template, ( pop_at P, q_ridx )
-      else                                Q = gnd.pod.create cfg.template
-      #.....................................................................................................
-      if P.length > p_arity
-        throw new Positional_arity_error "Ωnfa___5 expected up to #{p_arity} positional arguments, got #{P.length}"
-      #.....................................................................................................
-      push_at P, q_ridx, undefined while P.length < p_arity
+      cfg_value = P.at q_ridx
+      if      ( gnd.pod.isa cfg_value  ) then Q = set_at P, q_ridx, gnd.pod.create cfg.template, P.at q_ridx
+      else if ( cfg_value is undefined ) then Q = set_at P, q_ridx, gnd.pod.create cfg.template
+      else throw new Error "Ωnfa___8 expected an optional POD at position #{q_ridx}, got #{rpr cfg_value}"
       #.....................................................................................................
       ### Harmonize values: ###
-      for name, idx in p_names
+      for name, idx in names
         continue if idx is q_idx
         if ( P[ idx ] isnt undefined ) then Q[ name ] = P[ idx  ]
-        else                                P[ idx  ] = Q[ name ]
+        P[ idx  ] = Q[ name ]
+        Q[ name ] = P[ idx  ]
+        # if ( P[ idx ] isnt undefined ) then Q[ name ] = P[ idx  ]
+        # else                                P[ idx  ] = Q[ name ]
       #.....................................................................................................
-      push_at P, q_ridx, Q
       return fn.call @, P...
-      # return fn.call @, P..., Q
 
   #---------------------------------------------------------------------------------------------------------
   get_signature: ( fn ) ->
@@ -112,17 +121,17 @@ class Normalize_function_arguments
       if jsid_re.test name
         q_idx = idx if name is this_cfg_q_name
       else
-        throw new Signature_disposition_Error "Ωnfa___6 parameter disposition not compliant: #{rpr name} in #{rpr signature}"
+        throw new Signature_disposition_Error "Ωnfa___9 parameter disposition not compliant: #{rpr name} in #{rpr signature}"
     #.......................................................................................................
     unless q_idx?
       names_rpr = names.join ', '
-      throw new Signature_naming_Error "Ωnfa___7 parameter naming not compliant: no parameter named #{rpr this_cfg_q_name}, got #{rpr names_rpr}"
+      throw new Signature_naming_Error "Ωnfa__10 parameter naming not compliant: no parameter named #{rpr this_cfg_q_name}, got #{rpr names_rpr}"
     #.......................................................................................................
     switch q_idx
       when names.length - 2 then q_ridx = -2
       when names.length - 1 then q_ridx = -1
       else
-        throw new Signature_cfg_position_error "Ωnfa___8 parameter ordering not compliant: expected #{rpr this_cfg_q_name} to come last or next-to-last, found it at index #{q_idx} of #{names.length} parameters"
+        throw new Signature_cfg_position_error "Ωnfa__11 parameter ordering not compliant: expected #{rpr this_cfg_q_name} to come last or next-to-last, found it at index #{q_idx} of #{names.length} parameters"
     #.......................................................................................................
     return { names, q_idx, q_ridx, }
 

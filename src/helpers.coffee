@@ -100,7 +100,7 @@ bind_instance_methods = ( instance, keep_name = true ) ->
 push_at = ( list, idx, x ) ->
   unless idx < 0
     throw new Error "Ωnfa___1 expected negative number, got #{rpr idx}"
-  list.splice ( Math.max list.length + 1 + idx, 0 ), 0, x
+  list.splice ( Math.max list.length + idx, 0 ), 0, x
   return list
 
 #-----------------------------------------------------------------------------------------------------------
@@ -110,6 +110,13 @@ pop_at = ( list, idx, x ) ->
   unless list.length >= Math.abs idx
     throw new Error "Ωnfa___3 list too short, got index #{idx} for length of #{list.length}"
   return ( list.splice idx, 1 )[ 0 ]
+
+#-----------------------------------------------------------------------------------------------------------
+set_at = ( list, idx, x ) ->
+  unless idx < 0
+    throw new Error "Ωnfa___4 expected negative number, got #{rpr idx}"
+  list[ list.length + idx ] = x
+  return x
 
 
 #===========================================================================================================
@@ -128,6 +135,7 @@ module.exports = {
   bind_instance_methods
   push_at
   pop_at
+  set_at
   debug
   help
   warn
