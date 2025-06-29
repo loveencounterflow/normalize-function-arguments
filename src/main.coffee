@@ -80,7 +80,7 @@ class Normalize_function_arguments
     #.......................................................................................................
     return ( P... ) ->
       if P.length > arity
-        throw new Positional_arity_error "Ωnfa___6 expected up to #{arity} arguments, got #{P.length}"
+        throw new Positional_arity_error "Ωnfa___5 expected up to #{arity} arguments, got #{P.length}"
       #.....................................................................................................
       if P.length < arity
         if gnd.pod.isa P.at q_ridx
@@ -122,17 +122,17 @@ class Normalize_function_arguments
       if jsid_re.test name
         q_idx = idx if name is this_cfg_q_name
       else
-        throw new Signature_disposition_Error "Ωnfa___9 parameter disposition not compliant: #{rpr name} in #{rpr signature}"
+        throw new Signature_disposition_Error "Ωnfa___7 parameter disposition not compliant: #{rpr name} in #{rpr signature}"
     #.......................................................................................................
     unless q_idx?
       names_rpr = names.join ', '
-      throw new Signature_naming_Error "Ωnfa__10 parameter naming not compliant: no parameter named #{rpr this_cfg_q_name}, got #{rpr names_rpr}"
+      throw new Signature_naming_Error "Ωnfa___8 parameter naming not compliant: no parameter named #{rpr this_cfg_q_name}, got #{rpr names_rpr}"
     #.......................................................................................................
     switch q_idx
       when names.length - 2 then q_ridx = -2
       when names.length - 1 then q_ridx = -1
       else
-        throw new Signature_cfg_position_error "Ωnfa__11 parameter ordering not compliant: expected #{rpr this_cfg_q_name} to come last or next-to-last, found it at index #{q_idx} of #{names.length} parameters"
+        throw new Signature_cfg_position_error "Ωnfa___9 parameter ordering not compliant: expected #{rpr this_cfg_q_name} to come last or next-to-last, found it at index #{q_idx} of #{names.length} parameters"
     #.......................................................................................................
     return { names, q_idx, q_ridx, }
 
