@@ -84,9 +84,13 @@ class Normalize_function_arguments
       #.....................................................................................................
       if gnd.pod.isa P.at q_ridx
         push_at P, q_ridx, undefined while P.length < arity
+        ### ATP, `P` holds `arity` arguments and there *is* a POD in CFG position (which we assume to
+        represent CFG so we can make a copy, filling in template values): ###
         Q = set_at P, q_ridx, gnd.pod.create cfg.template, P.at q_ridx
       else
         P.push undefined while P.length < arity
+        ### ATP, `P` holds `arity` arguments and there *may be* an `undefined` in CFG position (which we
+        assume is replaceable by a newly created CFG instance with template values): ###
         if ( P.at q_ridx ) is undefined
           Q = set_at P, q_ridx, gnd.pod.create cfg.template
         else
@@ -94,12 +98,10 @@ class Normalize_function_arguments
       #.....................................................................................................
       ### Harmonize values: ###
       for name, idx in names
-        continue if idx is q_idx
-        if ( P[ idx ] isnt undefined ) then Q[ name ] = P[ idx  ]
-        P[ idx  ] = Q[ name ]
-        Q[ name ] = P[ idx  ]
-        # if ( P[ idx ] isnt undefined ) then Q[ name ] = P[ idx  ]
-        # else                                P[ idx  ] = Q[ name ]
+        continue if idx is q_idx ### skip over CFG object's (`Q`'s') position in P ###
+        if ( P[ idx   ] is undefined )  then  P[ idx  ] = Q[ name ]
+        else                                  Q[ name ] = P[ idx  ] ### pos.arg:s other than undef. take precedence ###
+        if ( Q[ name  ] is undefined )  then  Q[ name ] = P[ idx  ] ### ensure all sign. names are set in CFG POD `Q` ###
       #.....................................................................................................
       return fn.call @, P...
 
