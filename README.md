@@ -95,6 +95,12 @@ validation
   do not place type restrictions on that last parameter)
 * **`[—]`** allow asynchronous functions, generator functions, async generator functions for
   `Normalize_function_arguments::nfa#fn`
+* **`[—]`** errors:
+  * **`[—]`** refactor error classes to proper module
+  * **`[—]`** use standard setup
+  * **`[—]`** apply to errors thrown in submodule `helpers`
+* **`[—]`** implement a 'nano' or 'kernel' version of ClearType (sans `create()` prob.) but, crucially, with
+  constructor for `validate()` methods, proper `type_of()`
 
 
 ### To Be Written: Template Class
