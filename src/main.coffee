@@ -75,10 +75,11 @@ class Normalize_function_arguments
       q_idx
       q_ridx        } = @get_signature fn
     arity             = names.length
+    fn_name           = fn.name
     # p_names           = ( name for name, idx in names when idx isnt q_idx )
     # p_arity           = p_names.length
     #.......................................................................................................
-    return ( P... ) ->
+    return nameit fn_name, ( P... ) ->
       if P.length > arity
         throw new Positional_arity_error "Ωnfa___5 expected up to #{arity} arguments, got #{P.length}"
       #.....................................................................................................
