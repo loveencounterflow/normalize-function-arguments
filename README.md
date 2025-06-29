@@ -33,6 +33,7 @@ validation
   * **must not** use spread syntax or default values on any on the parameters
   * **must** have a parameter named `cfg` as its *only*, or as its *last* or as its *next-to-last* parameter
 
+<!--
 * **Argument Normalization**
 
   * let
@@ -60,7 +61,9 @@ validation
   * In case the length of `P` is greater than `arity`, we throw an error.
   * In the remaining case we push as many filler values (`undefined`) into the position *preceding* the
     `cfg` object untile the length of `P` equals `arity`.
+-->
 
+* (**TBD**) normalization of call-time arguments
 * (**TBD**) templating
 * (**TBD**) validation
 * (**TBD**) ClearType integration
@@ -117,6 +120,7 @@ validation
   a fallback value `{}`</del> <ins>mandate at least one and final parameter that must have the configured
   `q_name`</ins>
 * **`[+]`** CFG setting `template` as `nfa { template, }, fn`
+* **`[+]`** preserve name of wrapped function
 
 <!--
 ###
