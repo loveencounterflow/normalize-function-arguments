@@ -76,8 +76,6 @@ class Normalize_function_arguments
       q_ridx        } = @get_signature fn
     arity             = names.length
     fn_name           = fn.name
-    # p_names           = ( name for name, idx in names when idx isnt q_idx )
-    # p_arity           = p_names.length
     #.......................................................................................................
     return nameit fn_name, ( P... ) ->
       if P.length > arity

@@ -37,13 +37,6 @@ class Template
 #===========================================================================================================
 gnd = do ->
   R =
-    # anything:       isa:  ( x ) -> true
-    # primitive:      isa:  ( x ) -> primitive_types.includes type_of x
-    # #.........................................................................................................
-    # ### NOTE types 'simple' and 'compound' more or less boil down to x being a POD, their explicit definition
-    # are for clarity and to allow for later modification ###
-    # simple:         isa:  ( x ) -> ( not x? ) or ( not gnd.compound.isa x )
-    # compound:       isa:  ( x ) -> gnd.pod.isa x
     # boolean:        isa:  ( x ) -> ( x is true ) or ( x is false )
     #.......................................................................................................
     function:
