@@ -93,7 +93,7 @@ class Normalize_function_arguments
         if ( P.at q_ridx ) is undefined
           Q = set_at P, q_ridx, gnd.pod.create cfg.template
         else
-          throw new Argument_type_error "Ωnfa___6 expected an optional POD at position #{q_ridx}, got #{rpr P.at q_ridx}"
+          throw new Argument_type_error "Ωnfa___7 expected an optional POD at position #{q_ridx}, got #{rpr P.at q_ridx}"
       #.....................................................................................................
       ### Harmonize values: ###
       for name, idx in names
@@ -102,7 +102,7 @@ class Normalize_function_arguments
         else                                  Q[ name ] = P[ idx  ] ### pos.arg:s other than undef. take precedence ###
         if ( Q[ name  ] is undefined )  then  Q[ name ] = P[ idx  ] ### ensure all sign. names are set in CFG POD `Q` ###
       #.....................................................................................................
-      return fn.call @, P...
+      return validate fn.call @, P...
 
   #---------------------------------------------------------------------------------------------------------
   get_signature: ( fn ) ->
@@ -120,17 +120,17 @@ class Normalize_function_arguments
       if jsid_re.test name
         q_idx = idx if name is this_cfg_q_name
       else
-        throw new Signature_disposition_Error "Ωnfa___7 parameter disposition not compliant: #{rpr name} in #{rpr signature}"
+        throw new Signature_disposition_Error "Ωnfa___8 parameter disposition not compliant: #{rpr name} in #{rpr signature}"
     #.......................................................................................................
     unless q_idx?
       names_rpr = names.join ', '
-      throw new Signature_naming_Error "Ωnfa___8 parameter naming not compliant: no parameter named #{rpr this_cfg_q_name}, got #{rpr names_rpr}"
+      throw new Signature_naming_Error "Ωnfa___9 parameter naming not compliant: no parameter named #{rpr this_cfg_q_name}, got #{rpr names_rpr}"
     #.......................................................................................................
     switch q_idx
       when names.length - 2 then q_ridx = -2
       when names.length - 1 then q_ridx = -1
       else
-        throw new Signature_cfg_position_error "Ωnfa___9 parameter ordering not compliant: expected #{rpr this_cfg_q_name} to come last or next-to-last, found it at index #{q_idx} of #{names.length} parameters"
+        throw new Signature_cfg_position_error "Ωnfa__10 parameter ordering not compliant: expected #{rpr this_cfg_q_name} to come last or next-to-last, found it at index #{q_idx} of #{names.length} parameters"
     #.......................................................................................................
     return { names, q_idx, q_ridx, }
 
