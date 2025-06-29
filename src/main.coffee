@@ -27,14 +27,14 @@ class Named_arity_error                   extends Arity_error
 class Runtime_arity_error                 extends Arity_error
 class Positional_arity_error              extends Arity_error
 class Not_implemented_error               extends Nfa_error
-class Value_mismatch_error                extends Nfa_error
 class Signature_error                     extends Nfa_error
 class Signature_disposition_Error         extends Signature_error
 class Signature_naming_Error              extends Signature_error
 class Signature_missing_parameter_Error   extends Signature_error
 class Signature_cfg_position_error        extends Signature_error
+class Value_mismatch_error                extends Nfa_error
 class Type_error                          extends Nfa_error
-# class Npo_type_error                      extends Type_error
+class Argument_type_error                 extends Type_error
 
 
 #===========================================================================================================
@@ -90,7 +90,7 @@ class Normalize_function_arguments
         if ( P.at q_ridx ) is undefined
           Q = set_at P, q_ridx, gnd.pod.create cfg.template
         else
-          throw new Error "Ωnfa___6 expected an optional POD at position #{q_ridx}, got #{rpr P.at q_ridx}"
+          throw new Argument_type_error "Ωnfa___6 expected an optional POD at position #{q_ridx}, got #{rpr P.at q_ridx}"
       #.....................................................................................................
       ### Harmonize values: ###
       for name, idx in names
