@@ -35,6 +35,16 @@ class Template
 
 
 #===========================================================================================================
+create_validator = ( typename, isa ) ->
+  ### TAINT `gnd.nonempty_text.validate typename` ###
+  ### TAINT `gnd.function.validate isa` ###
+  ### TAINT silently accepts truthy, falsy values returned by `isa()`, not only booleans ###
+  return ( x ) ->
+    return x if isa x
+    throw new TypeError "Ωnfa___1 validation error: expected a #{typename} got #{rpr x}"
+
+
+#===========================================================================================================
 gnd = do ->
   R =
     # boolean:        isa:  ( x ) -> ( x is true ) or ( x is false )
@@ -42,23 +52,40 @@ gnd = do ->
     function:
       isa:  ( x ) -> ( Object::toString.call x ) is '[object Function]'
     #.......................................................................................................
+    template:
+      isa:    ( x ) -> x instanceof Template
+    #.......................................................................................................
     pod:
       isa:    ( x ) -> x? and ( Object.getPrototypeOf x ) in pod_prototypes
       create: ( Q... ) -> Object.assign new_pod(), Q...
     #.......................................................................................................
     nfa_cfg:
+      isa: ( x ) ->
+        return false unless gnd.pod.isa x
+        return false unless gnd.template.isa_optional x.template
+        return false unless gnd.function.isa_optional x.isa
+        return false unless gnd.function.isa_optional x.validate
+        # return false unless gnd.function.isa_optional x.type
+        return true
       template:
         template: null
+        isa:      null
+        validate: null
+        type:     null
   #.........................................................................................................
   for typename, type of R
     type.name     = typename
     # type.validate = ( x ) -> ...
   #.........................................................................................................
   return R
-do =>
-  for typename, type of gnd
-    type.template = ( new Template type.template ) if type.template?
+### TAINT this is more or less `ClearType.Type::create()` ###
+do => for typename, type of gnd then do ( typename, type ) ->
+  if type.template? then type.template = ( new Template type.template )
+  if type.isa?
+    unless type.isa_optional? then type.isa_optional  = ( x ) -> ( not x? ) or ( type.isa x )
+    unless type.validate?     then type.validate      = create_validator type.name, ( x ) -> type.isa x
   return null
+
 
 #===========================================================================================================
 hide = ( object, name, value ) => Object.defineProperty object, name,
@@ -122,6 +149,7 @@ rpr     = ( x ) -> ( require 'loupe' ).inspect x
 module.exports = {
   Template
   gnd
+  create_validator
   hide
   nameit
   # get_instance_methods

@@ -6,6 +6,7 @@ H                         = require './helpers'
 { Template
   gnd
   hide
+  create_validator
   # get_instance_methods
   bind_instance_methods
   nameit
@@ -70,12 +71,15 @@ class Normalize_function_arguments
     #.......................................................................................................
     cfg               = { gnd.nfa_cfg.template..., cfg..., }
     cfg.template      = ( new Template cfg.template ) if cfg.template?
+    gnd.nfa_cfg.validate cfg
     #.......................................................................................................
     { names
       q_idx
       q_ridx        } = @get_signature fn
     arity             = names.length
     fn_name           = fn.name
+    #.......................................................................................................
+    validate = if cfg.isa? then ( create_validator "#{fn_name}_cfg", cfg.isa ) else ( x ) -> x
     #.......................................................................................................
     return nameit fn_name, ( P... ) ->
       if P.length > arity
