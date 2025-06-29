@@ -82,18 +82,15 @@ class Normalize_function_arguments
       if P.length > arity
         throw new Positional_arity_error "Ωnfa___5 expected up to #{arity} arguments, got #{P.length}"
       #.....................................................................................................
-      if P.length < arity
-        if gnd.pod.isa P.at q_ridx
-          while P.length < arity
-            push_at P, q_ridx, undefined
+      if gnd.pod.isa P.at q_ridx
+        push_at P, q_ridx, undefined while P.length < arity
+        Q = set_at P, q_ridx, gnd.pod.create cfg.template, P.at q_ridx
+      else
+        P.push undefined while P.length < arity
+        if ( P.at q_ridx ) is undefined
+          Q = set_at P, q_ridx, gnd.pod.create cfg.template
         else
-          while P.length < arity
-            P.push undefined
-      #.....................................................................................................
-      cfg_value = P.at q_ridx
-      if      ( gnd.pod.isa cfg_value  ) then Q = set_at P, q_ridx, gnd.pod.create cfg.template, P.at q_ridx
-      else if ( cfg_value is undefined ) then Q = set_at P, q_ridx, gnd.pod.create cfg.template
-      else throw new Error "Ωnfa___8 expected an optional POD at position #{q_ridx}, got #{rpr cfg_value}"
+          throw new Error "Ωnfa___6 expected an optional POD at position #{q_ridx}, got #{rpr P.at q_ridx}"
       #.....................................................................................................
       ### Harmonize values: ###
       for name, idx in names
