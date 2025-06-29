@@ -10,7 +10,7 @@ H                         = require './helpers'
   bind_instance_methods
   nameit
   push_at
-  pop_at
+  # pop_at
   set_at
   debug
   warn
@@ -42,7 +42,7 @@ internals = new class Internals then constructor: ->
   @pod_prototypes = H.pod_prototypes
   @gnd            = gnd
   @push_at        = push_at
-  @pop_at         = pop_at
+  # @pop_at         = pop_at
   @set_at         = set_at
   return undefined
 
