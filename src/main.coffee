@@ -81,7 +81,8 @@ class Normalize_function_arguments
     return ( P... ) ->
       if P.length > arity
         throw new Positional_arity_error "Ωnfa___6 expected up to #{arity} arguments, got #{P.length}"
-      else if P.length < arity
+      #.....................................................................................................
+      if P.length < arity
         if gnd.pod.isa P.at q_ridx
           while P.length < arity
             push_at P, q_ridx, undefined
