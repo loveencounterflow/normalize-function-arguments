@@ -12,6 +12,7 @@
   - [To Do](#to-do)
     - [To Be Written: Template Class](#to-be-written-template-class)
   - [Is Done](#is-done)
+  - [Don't](#dont)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -78,18 +79,24 @@ validation
 
 ## To Do
 
-* **`[—]`** implement validation as `nfa { isa, }, fn`
 * **`[—]`** integrate ClearType as `nfa type, fn` and `nfa { type, }, fn`
 * **`[—]`** allow shifting of arguments depending on their type
 * **`[—]`** configuration settings:
   * **`[—]`** demand vs allow final CFG
   * **`[—]`** demand n positional arguments
-  * **`[—]`** name clash resolution strategies
-  * **`[—]`** fallback value for unset positional arguments (or use `template`)
-  * **`[—]`** fallback value for unset qualified arguments
-  * **`[—]`** function or type to check whether last argument is 'Q-worthy' (one expected for named
+  * **`[+]`** fallback value for unset qualified arguments (`template`)
+  * **`[+]`** function or type to check whether last argument is 'Q-worthy' (one expected for named
     arguments)
-  * **`[—]`** name of named parameters object, defaults to `cfg`
+  * **`[—]`** name of named parameters object (defaults to `cfg`)
+  * **`[—]`** allow both standalone `type` (as in `nfa type ( cfg ) ->`) and `type` as named setting (as in
+    `nfa { type, } ( cfg ) ->`)
+* resolution strategy for repeated setting:
+  * **`[—]`** `cfg.template` should prevail in `cfg = { template, type: { template, }, }`
+  * **`[—]`** `cfg.isa`      should prevail in `cfg = { isa, type: { isa, }, }`
+  * **`[—]`** `cfg.validate` should prevail in `cfg = { validate, type: { validate, }, }`
+  * **`[—]`** `cfg.validate` should prevail in `cfg = { validate, isa, type: { validate, isa, }, }`
+  * in general, the 'lower'/outer, ('more visible') setting should prevail; explicit `validate()` should
+    prevail over implicit validation constructed from `isa()`
 * **`[—]`** allow the CFG parameter to be in penultimate position to cover cases (like in
   `Normalize_function_arguments::nfa()`) where a final parameter should be occupied by e.g. a function (but
   do not place type restrictions on that last parameter)
@@ -127,6 +134,14 @@ validation
   `q_name`</ins>
 * **`[+]`** CFG setting `template` as `nfa { template, }, fn`
 * **`[+]`** preserve name of wrapped function
+* **`[+]`** implement validation as `nfa { isa, }, fn`
+
+## Don't
+
+* **`[—]`** <del>name clash resolution strategies</del> <ins>positional arguments other than `undefined`
+  always override values in `cfg`</ins>
+* **`[—]`** <del>fallback value for unset positional arguments (or use `template`)</del> <ins>positional
+  arguments other than `undefined` always override values in `cfg`</ins>
 
 <!--
 ###
