@@ -45,6 +45,7 @@ internals = new class Internals then constructor: ->
   @push_at        = push_at
   # @pop_at         = pop_at
   @set_at         = set_at
+  @nameit         = nameit
   return undefined
 
 
