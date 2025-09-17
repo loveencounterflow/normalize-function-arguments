@@ -7,6 +7,11 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "parcel build lib/main.js --dist-dir dist"
   },
+  "targets": {
+      "main": {
+        "includeNodeModules": true
+      }
+    },
   "keywords": [],
   "author": "",
   "license": "ISC",
