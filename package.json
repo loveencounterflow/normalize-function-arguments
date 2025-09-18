@@ -4,7 +4,8 @@
   "description": "Normalize JavaScript function arguments to simplify variadic function signatures, default values, type validation",
   "main": "dist/main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "relink-parcel": "ln -sf ../lib/main.js dist/main.js",
+    "test": "pnpm run relink-parcel && nodexh ../hengist-NG/dev/normalize-function-arguments/lib/test-all.js",
     "build": "parcel build lib/main.js --dist-dir dist"
   },
   "targets": {
