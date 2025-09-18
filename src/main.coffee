@@ -86,6 +86,10 @@ class Normalize_function_arguments
       if P.length > arity
         throw new Positional_arity_error "Ωnfa___5 expected up to #{arity} arguments, got #{P.length}"
       #.....................................................................................................
+      if ( q_ridx is -2 ) and ( gnd.function.isa ( P.at -1 ) )
+        if gnd.pod.isa P.at q_ridx then push_at P, q_ridx, undefined while P.length < arity
+        else                            push_at P,     -1, undefined while P.length < arity
+      #.....................................................................................................
       if gnd.pod.isa P.at q_ridx
         push_at P, q_ridx, undefined while P.length < arity
         ### ATP, `P` holds `arity` arguments and there *is* a POD in CFG position (which we assume to
