@@ -10,7 +10,9 @@
   - [Properties](#properties)
   - [Terminology](#terminology)
   - [To Do](#to-do)
-    - [To Be Written: Template Class](#to-be-written-template-class)
+    - [Template Class](#template-class)
+    - [Order of Arguments](#order-of-arguments)
+    - [Other](#other)
   - [Is Done](#is-done)
   - [Don't](#dont)
 
@@ -79,6 +81,25 @@ validation
 
 ## To Do
 
+### Template Class
+
+* class `Template` accepts `cfg`, an optional, single POD for instantiation
+* will copy all own properties of `cfg`, but
+* properties that are functions will be turned into managed properties
+* in order to have templates with mutable objects as properties that are not shared after copying with `t =
+  new Template cfg; { t..., }`, do not use `t = { n: [ 1, 2, 3, ], }`, instead wrap value in function, as in
+  `t = { n: ( -> [ 1, 2, 3, ] ), }`; now every time `t` is copied, `t.n` will be a new list
+* nested PODs will be recursively turned into instances of `Template`
+
+### Order of Arguments
+
+* when CFG is in the penultimate, an optional function is assumed to be the last parameter
+  * in such cases, when the wrapped function is called with a function as last argument, that function will
+    be 'shifted' to the position of the terminal parameter, meaning that it will not be understood as the
+    value of another positional argument
+
+### Other
+
 * **`[—]`** integrate ClearType as `nfa type, fn` and `nfa { type, }, fn`
 * **`[—]`** allow shifting of arguments depending on their type
 * **`[—]`** configuration settings:
@@ -109,16 +130,6 @@ validation
 * **`[—]`** implement a 'nano' or 'kernel' version of ClearType (sans `create()` prob.) but, crucially, with
   constructor for `validate()` methods, proper `type_of()`
 
-
-### To Be Written: Template Class
-
-* class `Template` accepts `cfg`, an optional, single POD for instantiation
-* will copy all own properties of `cfg`, but
-* properties that are functions will be turned into managed properties
-* in order to have templates with mutable objects as properties that are not shared after copying with `t =
-  new Template cfg; { t..., }`, do not use `t = { n: [ 1, 2, 3, ], }`, instead wrap value in function, as in
-  `t = { n: ( -> [ 1, 2, 3, ] ), }`; now every time `t` is copied, `t.n` will be a new list
-* nested PODs will be recursively turned into instances of `Template`
 
 ## Is Done
 
