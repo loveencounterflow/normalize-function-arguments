@@ -1,6 +1,6 @@
 {
   "name": "normalize-function-arguments",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Normalize JavaScript function arguments to simplify variadic function signatures, default values, type validation",
   "main": "dist/main.js",
   "scripts": {
@@ -9,10 +9,10 @@
     "build": "parcel build lib/main.js --dist-dir dist"
   },
   "targets": {
-      "main": {
-        "includeNodeModules": true
-      }
-    },
+    "main": {
+      "includeNodeModules": true
+    }
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
