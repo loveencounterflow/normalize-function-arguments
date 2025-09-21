@@ -68,7 +68,7 @@ class Normalize_function_arguments
     #.......................................................................................................
     ### TAINT do this in `gnd` ###
     unless gnd.pod.isa cfg      then throw new Type_error "Ωnfa___3 expected a POD, got #{rpr cfg}"
-    unless gnd.function.isa fn  then throw new Type_error "Ωnfa___4 expected a function, got #{rpr cfg}"
+    unless gnd.callable.isa fn  then throw new Type_error "Ωnfa___4 expected a callable, got #{rpr cfg}"
     #.......................................................................................................
     cfg               = { gnd.nfa_cfg.template..., cfg..., }
     cfg.template      = ( new Template cfg.template ) if cfg.template?
@@ -86,7 +86,7 @@ class Normalize_function_arguments
       if P.length > arity
         throw new Positional_arity_error "Ωnfa___5 expected up to #{arity} arguments, got #{P.length}"
       #.....................................................................................................
-      if ( q_ridx is -2 ) and ( gnd.function.isa ( P.at -1 ) )
+      if ( q_ridx is -2 ) and ( gnd.callable.isa ( P.at -1 ) )
         if gnd.pod.isa P.at q_ridx then push_at P, q_ridx, undefined while P.length < arity
         else                            push_at P,     -1, undefined while P.length < arity
       #.....................................................................................................
