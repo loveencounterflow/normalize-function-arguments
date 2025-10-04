@@ -55,8 +55,11 @@ gnd = do ->
     asyncfunction:
       isa:  ( x ) -> ( Object::toString.call x ) is '[object AsyncFunction]'
     #.......................................................................................................
+    generatorfunction:
+      isa:  ( x ) -> ( Object::toString.call x ) is '[object GeneratorFunction]'
+    #.......................................................................................................
     callable:
-      isa:  ( x ) -> ( Object::toString.call x ) in [ '[object Function]', '[object AsyncFunction]', ]
+      isa:  ( x ) -> ( Object::toString.call x ) in [ '[object Function]', '[object AsyncFunction]', '[object GeneratorFunction]', ]
     #.......................................................................................................
     template:
       isa:    ( x ) -> x instanceof Template
