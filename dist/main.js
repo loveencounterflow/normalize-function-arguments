@@ -124,10 +124,16 @@ parcelRegister("5WJ0w", function(module, exports) {
                 }
             },
             //.......................................................................................................
+            generatorfunction: {
+                isa: function(x) {
+                    return Object.prototype.toString.call(x) === '[object GeneratorFunction]';
+                }
+            },
+            //.......................................................................................................
             callable: {
                 isa: function(x) {
                     var ref;
-                    return (ref = Object.prototype.toString.call(x)) === '[object Function]' || ref === '[object AsyncFunction]';
+                    return (ref = Object.prototype.toString.call(x)) === '[object Function]' || ref === '[object AsyncFunction]' || ref === '[object GeneratorFunction]';
                 }
             },
             //.......................................................................................................
