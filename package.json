@@ -2,16 +2,9 @@
   "name": "normalize-function-arguments",
   "version": "0.1.0",
   "description": "Normalize JavaScript function arguments to simplify variadic function signatures, default values, type validation",
-  "main": "dist/main.js",
+  "main": "lib/main.js",
   "scripts": {
-    "relink-parcel": "ln -sf ../lib/main.js dist/main.js",
-    "test": "pnpm run relink-parcel && nodexh ../hengist-NG/dev/normalize-function-arguments/lib/test-all.js",
-    "build": "parcel build lib/main.js --dist-dir dist"
-  },
-  "targets": {
-    "main": {
-      "includeNodeModules": true
-    }
+    "test": "nodexh ../hengist-NG/dev/normalize-function-arguments/lib/test-all.js"
   },
   "keywords": [],
   "author": "",
@@ -19,8 +12,5 @@
   "packageManager": "pnpm@10.12.1",
   "dependencies": {
     "loupe": "^3.1.4"
-  },
-  "devDependencies": {
-    "parcel": "^2.15.4"
   }
 }
