@@ -8,15 +8,39 @@ importers:
 
   .:
     dependencies:
+      bricabrac-sfmodules:
+        specifier: ^0.18.0
+        version: 0.18.0
       loupe:
         specifier: ^3.1.4
         version: 3.1.4
 
 packages:
 
+  bricabrac-sfmodules@0.18.0:
+    resolution: {integrity: sha512-rajGfQDa9hlEubD5ctV1D88UJN5d/xb4Cd2xDzYsqlzWeGVqV3mkQyAcA5S+mh7eK+jqt/i5+4xmwjjD32jq5A==}
+
+  env-paths@3.0.0:
+    resolution: {integrity: sha512-dtJUTepzMW3Lm/NPxRf3wP4642UWhjL2sQxc+ym2YMj1m/H2zDNQOlezafzkHwn6sMstjHTwG6iQQsctDW/b1A==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+
   loupe@3.1.4:
     resolution: {integrity: sha512-wJzkKwJrheKtknCOKNEtDK4iqg/MxmZheEMtSTYvnzRdEYaZzmgH976nenp8WdJRdx5Vc1X/9MO0Oszl6ezeXg==}
 
+  normalize-function-arguments@0.1.0:
+    resolution: {integrity: sha512-ske8wWMhYLNV9rhnJKENJ4NEKzmIMzrX39UZpt5aVRsEBlK0ea3o046NtdC8yPbODaU6I3sQggTIPVw6zlBNhA==}
+
 snapshots:
 
+  bricabrac-sfmodules@0.18.0:
+    dependencies:
+      env-paths: 3.0.0
+      normalize-function-arguments: 0.1.0
+
+  env-paths@3.0.0: {}
+
   loupe@3.1.4: {}
+
+  normalize-function-arguments@0.1.0:
+    dependencies:
+      loupe: 3.1.4
