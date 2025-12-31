@@ -19,6 +19,8 @@ H                         = require './helpers'
   rpr                   } = H
 # E                         = require './errors'
 # optional                  = Symbol 'optional'
+SFMODULES                 = require 'bricabrac-sfmodules'
+{ type_of,              } = SFMODULES.unstable.require_type_of()
 
 
 #=========================================================================================================
@@ -79,6 +81,7 @@ class Normalize_function_arguments
       q_ridx        } = @get_signature fn
     arity             = names.length
     fn_name           = fn.name
+    fn_name           = '(ANONOYMOUS FUNCTION)' if fn_name is ''
     #.......................................................................................................
     validate = if cfg.isa? then ( create_validator "#{fn_name}_cfg", cfg.isa ) else ( x ) -> x
     #.......................................................................................................
@@ -111,7 +114,11 @@ class Normalize_function_arguments
         else                                  Q[ name ] = P[ idx  ] ### pos.arg:s other than undef. take precedence ###
         if ( Q[ name  ] is undefined )  then  Q[ name ] = P[ idx  ] ### ensure all sign. names are set in CFG POD `Q` ###
       #.....................................................................................................
-      return validate fn.call @, P...
+      switch type = type_of fn
+        when 'function'           then return                         validate fn.call @, P...
+        when 'asyncfunction'      then return _call_asyncfunction.call      @, validate, fn, P
+        when 'generatorfunction'  then return _call_generatorfunction.call  @, validate, fn, P
+        else throw new Error "Ωnfa___7 unable to handle callable of type #{rpr type}"
 
   #---------------------------------------------------------------------------------------------------------
   get_signature: ( fn ) ->
@@ -129,20 +136,25 @@ class Normalize_function_arguments
       if jsid_re.test name
         q_idx = idx if name is this_cfg_q_name
       else
-        throw new Signature_disposition_Error "Ωnfa___7 parameter disposition not compliant: #{rpr name} in #{rpr signature}"
+        throw new Signature_disposition_Error "Ωnfa___8 parameter disposition not compliant: #{rpr name} in #{rpr signature}"
     #.......................................................................................................
     unless q_idx?
       names_rpr = names.join ', '
-      throw new Signature_naming_Error "Ωnfa___8 parameter naming not compliant: no parameter named #{rpr this_cfg_q_name}, got #{rpr names_rpr}"
+      throw new Signature_naming_Error "Ωnfa___9 parameter naming not compliant: no parameter named #{rpr this_cfg_q_name}, got #{rpr names_rpr}"
     #.......................................................................................................
     switch q_idx
       when names.length - 2 then q_ridx = -2
       when names.length - 1 then q_ridx = -1
       else
-        throw new Signature_cfg_position_error "Ωnfa___9 parameter ordering not compliant: expected #{rpr this_cfg_q_name} to come last or next-to-last, found it at index #{q_idx} of #{names.length} parameters"
+        throw new Signature_cfg_position_error "Ωnfa__10 parameter ordering not compliant: expected #{rpr this_cfg_q_name} to come last or next-to-last, found it at index #{q_idx} of #{names.length} parameters"
     #.......................................................................................................
     return { names, q_idx, q_ridx, }
 
+#===========================================================================================================
+# _call_asyncfunction     = ( validate, fn, P ) -> validate await fn.call @, P...
+### TAINT where to put validate()??? ###
+_call_asyncfunction     = ( validate, fn, P ) -> await fn.call @, P...
+_call_generatorfunction = ( validate, fn, P ) -> yield from fn.call @, P...
 
 #===========================================================================================================
 normalizer                = new Normalize_function_arguments()

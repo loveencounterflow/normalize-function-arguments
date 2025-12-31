@@ -6,6 +6,8 @@
 pod_prototypes            = Object.freeze [ null, ( Object.getPrototypeOf {} ), ]
 # new_pod                   = -> {}
 new_pod                   = -> Object.create null
+SFMODULES                 = require 'bricabrac-sfmodules'
+{ type_of,              } = SFMODULES.unstable.require_type_of()
 
 # #===========================================================================================================
 # @bind_proto = ( that, f ) -> that::[ f.name ] = f.bind that::
@@ -41,7 +43,7 @@ create_validator = ( typename, isa ) ->
   ### TAINT silently accepts truthy, falsy values returned by `isa()`, not only booleans ###
   return ( x ) ->
     return x if isa x
-    throw new TypeError "Ωnfa___1 validation error: expected a #{typename} got #{rpr x}"
+    throw new TypeError "Ωnfah___1 validation error: expected a #{typename}, got a #{type_of x} (#{rpr x})"
 
 
 #===========================================================================================================
@@ -128,22 +130,22 @@ bind_instance_methods = ( instance, keep_name = true ) ->
 #===========================================================================================================
 push_at = ( list, idx, x ) ->
   unless idx < 0
-    throw new Error "Ωnfa___7 expected negative number, got #{rpr idx}"
+    throw new Error "Ωnfah___2 expected negative number, got a #{type_of idx} (#{rpr idx})"
   list.splice ( Math.max list.length + idx, 0 ), 0, x
   return list
 
 # #-----------------------------------------------------------------------------------------------------------
 # pop_at = ( list, idx, x ) ->
 #   unless idx < 0
-#     throw new Error "Ωnfa___8 expected negative number, got #{rpr idx}"
+#     throw new Error "Ωnfah___3 expected negative number, got a #{type_of idx} (#{rpr idx})"
 #   unless list.length >= Math.abs idx
-#     throw new Error "Ωnfa___9 list too short, got index #{idx} for length of #{list.length}"
+#     throw new Error "Ωnfah___4 list too short, got index #{idx} for length of #{list.length}"
 #   return ( list.splice idx, 1 )[ 0 ]
 
 #-----------------------------------------------------------------------------------------------------------
 set_at = ( list, idx, x ) ->
   unless idx < 0
-    throw new Error "Ωnfa__10 expected negative number, got #{rpr idx}"
+    throw new Error "Ωnfah___5 expected negative number, got a #{type_of idx} (#{rpr idx})"
   list[ list.length + idx ] = x
   return x
 
